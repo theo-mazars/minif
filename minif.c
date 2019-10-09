@@ -26,7 +26,7 @@ size_t my_putstr_list(va_list va)
 
 size_t my_putnbr_list(va_list va)
 {
-    char c;
+    char c = 0;
     size_t i = 0;
     int d = 1;
     int nb = va_arg(va, int);
@@ -51,7 +51,7 @@ size_t my_putnbr_list(va_list va)
 size_t my_putunbr_list(va_list va)
 {
     unsigned int nb = va_arg(va, unsigned int);
-    char c;
+    char c = 0;
     unsigned int d = 1;
     size_t i = 0;
 
