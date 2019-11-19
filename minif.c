@@ -39,11 +39,9 @@ size_t my_putnbr_list(va_list va)
     }
     while ((nb / d) >= 10)
         d *= 10;
-    while (d > 0) {
+    for (; d > 0; i++, d /= 10) {
         c = (nb / d) % 10 + '0';
         write(1, &c, 1);
-        d /= 10;
-        i++;
     }
     return (i);
 }
@@ -70,21 +68,20 @@ size_t minif(char *str, ...)
 {
     va_list list;
     size_t j = 0;
-    char letter[5] = {'c', 'd', 'i', 's', 'u'};
-    ptr functions[5] = {&my_putchar_list, &my_putnbr_list, &my_putnbr_list,
-        &my_putstr_list, &my_putunbr_list};
     size_t nb = 0;
+    char l[] = {'c', 'd', 'i', 's', 'u', 0};
+    ptr functions[] = {&my_putchar_list, &my_putnbr_list, &my_putnbr_list,
+        &my_putstr_list, &my_putunbr_list};
 
     va_start(list, str);
-    for (size_t i = 0; str[i] != '\0'; i++) {
+    for (size_t i = 0; str[i]; i++)
         if (str[i] == '%') {
             i++;
             for (; str[i] == ' '; i++);
-            for (j = 0; j < 6 && str[i] != letter[j]; j++);
-            nb += (j == 6) ? (size_t) write(1, &str[i], 1) : functions[j](list);
+            for (j = 0; l[j] && str[i] != l[j]; j++);
+            nb += (!l[j]) ? (size_t) write(1, &str[i], 1) : functions[j](list);
         } else
             nb += write(1, &str[i], 1);
-    }
     va_end(list);
     return (nb);
 }
