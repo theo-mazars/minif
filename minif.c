@@ -7,15 +7,16 @@
 
 #include "minif.h"
 
-size_t my_putchar_list(va_list va)
+static size_t print_list_char(va_list va)
 {
-    char c = va_arg(va, int);
+    const int c = va_arg(va, int);
+
     return (write(1, &c, 1));
 }
 
-size_t my_putstr_list(va_list va)
+static size_t print_list_str(va_list va)
 {
-    char *str = va_arg(va, char *);
+    const char * const str = va_arg(va, char *);
     size_t i = 0;
 
     if (str == NULL)
@@ -24,11 +25,11 @@ size_t my_putstr_list(va_list va)
     return (write(1, str, i));
 }
 
-size_t my_putnbr_list(va_list va)
+static size_t print_list_number(va_list va)
 {
-    char c = 0;
-    size_t i = 0;
+    char c;
     int d = 1;
+    size_t i = 0;
     int nb = va_arg(va, int);
 
     if (nb == -2147483648)
@@ -39,49 +40,48 @@ size_t my_putnbr_list(va_list va)
     }
     while ((nb / d) >= 10)
         d *= 10;
-    for (; d > 0; i++, d /= 10) {
+    while (d > 0) {
         c = (nb / d) % 10 + '0';
-        write(1, &c, 1);
+        i += write(1, &c, 1);
+        d /= 10;
     }
     return (i);
 }
 
-size_t my_putunbr_list(va_list va)
+static size_t print_list_unumber(va_list va)
 {
-    unsigned int nb = va_arg(va, unsigned int);
-    char c = 0;
-    unsigned int d = 1;
+    char c;
     size_t i = 0;
+    unsigned int d = 1;
+    const unsigned int nb = va_arg(va, unsigned int);
 
     while ((nb / d) >= 10)
         d *= 10;
     while (d > 0) {
         c = (nb / d) % 10 + '0';
-        write(1, &c, 1);
+        i += write(1, &c, 1);
         d /= 10;
-        i++;
     }
     return (i);
 }
 
-size_t minif(char *str, ...)
+size_t minif(const char * const str, ...)
 {
     va_list list;
     size_t j = 0;
-    size_t nb = 0;
+    size_t len = 0;
     char l[] = {'c', 'd', 'i', 's', 'u', 0};
-    ptr functions[] = {&my_putchar_list, &my_putnbr_list, &my_putnbr_list,
-        &my_putstr_list, &my_putunbr_list};
+    ptr func[] = {&print_list_char, &print_list_number, &print_list_number,
+        &print_list_str, &print_list_unumber};
 
     va_start(list, str);
     for (size_t i = 0; str[i]; i++)
         if (str[i] == '%') {
-            i++;
-            for (; str[i] == ' '; i++);
+            while (str[++i] == ' ');
             for (j = 0; l[j] && str[i] != l[j]; j++);
-            nb += (!l[j]) ? (size_t) write(1, &str[i], 1) : functions[j](list);
+            len += (!l[j]) ? (size_t) write(1, &str[i], 1) : func[j](list);
         } else
-            nb += write(1, &str[i], 1);
+            len += write(1, str + i, 1);
     va_end(list);
-    return (nb);
+    return (len);
 }

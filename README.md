@@ -4,11 +4,15 @@ This function is a printf like in one file according to the EPITECH's coding sty
 ### Epitech Coding Style
 2023
 
-## Usage
+## Prototype
+```c
+size_t minif(const char * const str, ...);
+```
+
 `minif(str, ...);`
 
 ## Example
-``` C
+```c
 #include "minif.h"
 
 int main(void)
@@ -37,7 +41,7 @@ int main(void)
 | long long          | -9223372036854775808 | 9223372036854775807  |
 | unsigned long long | 0                    | 18446744073709551615 |
 
-## Author
+## Authors
 - [theo.mazars@epitech.eu](https://github.com/theo-mazars)
 - [timothee.couble@epitech.eu](https://github.com/Faroito)
 
